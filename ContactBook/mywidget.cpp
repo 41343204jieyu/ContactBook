@@ -1,6 +1,23 @@
 #include "mywidget.h"
 #include "ui_mywidget.h"
 
+#include <QFile>
+#include <QDebug>
+
+QString mFilename = "C:/Users/jarie/OneDrive/桌面/ContactBook/ContactBook.txt";
+
+void Write(QString Filename,QString str){
+    QFile mFile(Filename);
+    if(!mFile.open(QFile::WriteOnly | QFile::Text)){
+        qDebug()<<"could not open file for write";
+        return;
+    }
+    QTextStream out(&mFile);
+    out<<str;
+    mFile.flush();
+    mFile.close();
+}
+
 MyWidget::MyWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MyWidget)
@@ -39,5 +56,18 @@ void MyWidget::on_pushButton_clicked()
     ui->tableWidget->setItem(ui->tableWidget->rowCount()-1,3,inputRow4);
 
 
+}
+
+
+void MyWidget::on_pushButton_2_clicked()
+{
+    QString saveFile="";
+    for(int i=0;i<ui->tableWidget->rowCount();i++){
+        for(int j=0;j<ui->tableWidget->columnCount();j++){
+            saveFile+=ui->tableWidget->item(i,j)->text()+",";
+        }
+        saveFile+="\n";
+    }
+    Write(mFilename,saveFile);
 }
 
