@@ -3,6 +3,9 @@
 
 #include <QFile>
 #include <QDebug>
+#include <QFileDialog>
+
+
 
 QString mFilename = "C:/Users/jarie/OneDrive/桌面/ContactBook/ContactBook.txt";
 
@@ -70,4 +73,53 @@ void MyWidget::on_pushButton_2_clicked()
     }
     Write(mFilename,saveFile);
 }
+
+
+void MyWidget::on_pushButton_4_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(
+        this,
+        "選擇資料檔案",
+        "",
+        "CSV Files (*.csv);;Text Files (*.txt);;All Files (*)");
+
+    if (fileName.isEmpty()) return;
+
+    QFile mFile(fileName);
+    if (!mFile.open(QFile::ReadOnly | QFile::Text)) {
+        qDebug() << "File read error:" << mFile.errorString();
+        return;
+    }
+
+    ui->tableWidget->setRowCount(0);
+
+    QTextStream in(&mFile);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        if (line.trimmed().isEmpty()) continue;
+
+        QStringList parts = line.split(",");
+
+        if (parts.size() >= 4) {
+            int row = ui->tableWidget->rowCount();
+            ui->tableWidget->insertRow(row);
+
+            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(parts[0]));
+            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(parts[1]));
+            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(parts[2]));
+            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(parts[3]));
+        }
+    }
+
+    mFile.close();
+}
+
+
+
+void MyWidget::on_pushButton_3_clicked()
+{
+    close();
+}
+
+
 
